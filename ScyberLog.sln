@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScyberLog", "src\ScyberLog\ScyberLog.csproj", "{A0E81DAC-2A13-4B9B-B965-1534164BBCEA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScyberLog.Worker", "testApps\ScyberLog.Worker\ScyberLog.Worker.csproj", "{E30359C9-6C0F-47D5-B505-A23359A34FEB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScyberLog.Tests", "src\ScyberLog.Tests\ScyberLog.Tests.csproj", "{F0227364-6FC3-424B-AF28-BBD5C6F92F24}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{17CD096E-ABA7-4696-93C3-8D7D43C9F9DB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "testApps", "testApps", "{C2E322EC-1C94-4BAB-8D35-82CB2D7B2F77}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScyberLog.WebApi", "testApps\Scyberlog.WebApi\ScyberLog.WebApi.csproj", "{126FDA0C-180D-4FED-B7B7-A5BA0BD58727}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A0E81DAC-2A13-4B9B-B965-1534164BBCEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0E81DAC-2A13-4B9B-B965-1534164BBCEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0E81DAC-2A13-4B9B-B965-1534164BBCEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0E81DAC-2A13-4B9B-B965-1534164BBCEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E30359C9-6C0F-47D5-B505-A23359A34FEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E30359C9-6C0F-47D5-B505-A23359A34FEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E30359C9-6C0F-47D5-B505-A23359A34FEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E30359C9-6C0F-47D5-B505-A23359A34FEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0227364-6FC3-424B-AF28-BBD5C6F92F24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0227364-6FC3-424B-AF28-BBD5C6F92F24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0227364-6FC3-424B-AF28-BBD5C6F92F24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0227364-6FC3-424B-AF28-BBD5C6F92F24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{534B85CA-1340-4A37-8E87-A502EA5559FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{534B85CA-1340-4A37-8E87-A502EA5559FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{534B85CA-1340-4A37-8E87-A502EA5559FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{534B85CA-1340-4A37-8E87-A502EA5559FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{126FDA0C-180D-4FED-B7B7-A5BA0BD58727}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{126FDA0C-180D-4FED-B7B7-A5BA0BD58727}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{126FDA0C-180D-4FED-B7B7-A5BA0BD58727}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{126FDA0C-180D-4FED-B7B7-A5BA0BD58727}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{126FDA0C-180D-4FED-B7B7-A5BA0BD58727} = {C2E322EC-1C94-4BAB-8D35-82CB2D7B2F77}
+	EndGlobalSection
+EndGlobal
