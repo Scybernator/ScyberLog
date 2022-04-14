@@ -8,14 +8,14 @@
 
     <!-- Nuget Package Properties -->
     <PackageId>ScyberLog</PackageId>
-    <Version>1.1.1</Version>
+    <Version>1.1.2</Version>
     <Description>Simple console and file logger for .NET</Description>
     <PackageTags>scyberlog;log;logger;logging;logfiles;</PackageTags>
     <Authors>Scybernator</Authors>
     <Company>Scybernator</Company>
     <PackageReadmeFile>ReadMe.md</PackageReadmeFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
+    <PackageLicenseExpression>LGPL-3.0-or-later OR MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Scybernator/ScyberLog</RepositoryUrl>
     <Copyright>Copyright © 2022 ScyberLog Contributors</Copyright>
