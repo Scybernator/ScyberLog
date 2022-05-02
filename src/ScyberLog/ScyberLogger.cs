@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
@@ -7,7 +8,8 @@ using ScyberLog.Sinks;
 
 [assembly: InternalsVisibleTo("ScyberLog.Tests")]
 
-namespace ScyberLog {
+namespace ScyberLog 
+{
     internal class ScyberLogger : ILogger
     {
         private string Name { get; }
@@ -15,7 +17,7 @@ namespace ScyberLog {
         private IEnumerable<ILogSink> Sinks { get; }
         private LogLevel MinLevel { get; }
         private IStateMapper StateMapper { get; }
-        private List<object> Scopes { get; } = new List<object>();
+        private ConcurrentDictionary<Guid, object> Scopes { get; } = new ConcurrentDictionary<Guid, object>();
 
         public ScyberLogger(string name, LogLevel minLevel, ILogFormatter formatter, IEnumerable<ILogSink> sinks, IStateMapper stateMapper)
         {
@@ -29,9 +31,10 @@ namespace ScyberLog {
         #region ILogger
         public IDisposable BeginScope<TState>(TState state)
         {
+            var guid = Guid.NewGuid();
             var (scope, _) = MapState(state, (x, ex) => state?.ToString());
-            this.Scopes.Add(scope);
-            return new DisposeAction(() => this.Scopes.Remove(scope));
+            this.Scopes[guid] = scope;
+            return new DisposeAction(() => this.Scopes.Remove(guid, out _));
         }
 
         public bool IsEnabled(LogLevel logLevel) => logLevel >= this.MinLevel;
@@ -72,7 +75,7 @@ namespace ScyberLog {
                 State = state,
                 Exception = exception,
                 Formatter = formatter,
-                Scopes = this.Scopes
+                Scopes = this.Scopes.Values
             };
         }
     }

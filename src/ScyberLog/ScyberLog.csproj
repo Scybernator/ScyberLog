@@ -8,7 +8,7 @@
 
     <!-- Nuget Package Properties -->
     <PackageId>ScyberLog</PackageId>
-    <Version>1.1.2</Version>
+    <Version>1.1.4</Version>
     <Description>Simple console and file logger for .NET</Description>
     <PackageTags>scyberlog;log;logger;logging;logfiles;</PackageTags>
     <Authors>Scybernator</Authors>
