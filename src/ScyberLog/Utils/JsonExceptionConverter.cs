@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 
 namespace ScyberLog
 {
@@ -25,6 +26,7 @@ namespace ScyberLog
             var serializableProperties = value.GetType()
                 .GetProperties()
                 .Where(x => x.Name != nameof(Exception.TargetSite))
+                .Where(x => x.PropertyType != typeof(CancellationToken))
                 .Select(x => ( x.Name, Value: x.GetValue(value)));
 
             if (options?.DefaultIgnoreCondition == JsonIgnoreCondition.WhenWritingNull)

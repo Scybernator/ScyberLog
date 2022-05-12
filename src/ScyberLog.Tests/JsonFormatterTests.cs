@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -105,5 +106,21 @@ public class JsonFormatterTests
 
         logger.LogInformation("There shouldn't be any state in the json");
         StringAssert.DoesNotMatch(sink.LastMessage, new Regex("\"state\":"), "State was present in text only message");
+    }
+
+    private class TokenException : Exception
+    {
+        public CancellationToken Token { get; set; }
+        public TokenException(string message) : base(message) {}
+    }
+
+    [TestMethod]
+    public void ExceptionsDoNotSerializeCancellationTokens()
+    {
+        var sink = new TestSink();
+        var logger = new ScyberLogger(string.Empty, Information, Formatter, new []{ sink }, this.StateMapper);
+        var exception = new TokenException("Exceptional!");
+        logger.LogError(exception, "There shouldn't be any Cancellation Token here");
+        StringAssert.DoesNotMatch(sink.LastMessage, new Regex("\"CancellationToken\":"), "CancellationToken rendered.");
     }
 }
