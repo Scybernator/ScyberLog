@@ -46,7 +46,18 @@ namespace ScyberLog
             var (mappedState, mappedFormatter) = this.MapState(state, formatter);
             var context = GetLogContext(logLevel, eventId, exception, mappedState, mappedFormatter);
 
-            var message = this.Formatter.Format(context);
+            var message = string.Empty;
+            try
+            {
+                message = this.Formatter.Format(context);
+            }catch(Exception ex)
+            {
+                message = "Error formatting log message; " + ex.Message;
+                if(ex is FormatException && state.IsFormattedLogValues())
+                {
+                    message += " Format string: [" + state.GetOriginalMessage() + "]";
+                }
+            }
 
             this.Sinks.ForEach(x => x.Write(message, context));
         }

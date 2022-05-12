@@ -139,4 +139,19 @@ public class JsonFormatterTests
         logger.LogError(exception, string.Empty);
         StringAssert.DoesNotMatch(sink.LastMessage, new Regex("\"Exception accessing property\":"), "Exception not rendered in json");
     }
+
+    [TestMethod]
+    public void InvalidFormatStringHandling()
+    {
+        var sink = new TestSink();
+        var logger = new ScyberLogger(string.Empty, Information, Formatter, new []{ sink }, this.StateMapper);
+
+        var message = "{TimeStamp} {{Kilo}";
+        var param1 = DateTime.Now;
+        var param2 = 1000;
+        var param3 = TimeSpan.FromMilliseconds(10000);
+        logger.Log(Information, default(EventId), default(Exception), message, param1, param2, param3);
+        logger.LogInformation(message, param1, param2, param3);
+        StringAssert.Contains(sink.LastMessage, "Error formatting log message");
+    }
 }
