@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
@@ -26,13 +28,8 @@ namespace ScyberLog
             var serializableProperties = value.GetType()
                 .GetProperties()
                 .Where(x => x.Name != nameof(Exception.TargetSite))
-                .Where(x => x.PropertyType != typeof(CancellationToken))
-                .Select(x => ( x.Name, Value: x.GetValue(value)));
-
-            if (options?.DefaultIgnoreCondition == JsonIgnoreCondition.WhenWritingNull)
-            {
-                serializableProperties = serializableProperties.Where(x => x.Value != null);
-            }
+                //Cancellation tokens will throw exceptions on property access if they have been disposed 
+                .Where(x => x.PropertyType != typeof(CancellationToken));
 
             if(value is AggregateException)
             {
@@ -40,22 +37,40 @@ namespace ScyberLog
                 serializableProperties = serializableProperties.Where(x => x.Name != nameof(Exception.InnerException));
             }
 
-            var propList = serializableProperties.ToList();
-
-            if (propList.Count == 0)
+            var propertyValues = new List<(string Name, object Value)>();
+            foreach(var prop in serializableProperties)
             {
-                return; // Nothing to write
+                object val;
+                try
+                {
+                    val = prop.GetValue(value);
+                }catch(TargetInvocationException ex)
+                {
+                    val = ex.InnerException?.Message;
+                }
+                propertyValues.Add((prop.Name, val));
+            }
+
+            if (options?.DefaultIgnoreCondition == JsonIgnoreCondition.WhenWritingNull)
+            {
+                propertyValues = propertyValues.Where(x => x.Value != null).ToList();
             }
 
             //Add exception type
-            propList.Insert(0, ("Type", value.GetType().FullName));
+            propertyValues.Insert(0, ("Type", value.GetType().FullName));
 
             writer.WriteStartObject();
 
-            foreach (var prop in propList)
+            foreach (var (name, val) in propertyValues)
             {
-                writer.WritePropertyName(options?.PropertyNamingPolicy?.ConvertName(prop.Name) ?? prop.Name);
-                JsonSerializer.Serialize(writer, prop.Value, options);
+                writer.WritePropertyName(options?.PropertyNamingPolicy?.ConvertName(name) ?? name);
+                try
+                {
+                    JsonSerializer.Serialize(writer, val, options);
+                }catch(Exception ex)
+                {
+                    writer.WriteStringValue("Error serializing property; " + ex.Message);
+                }
             }
 
             writer.WriteEndObject();

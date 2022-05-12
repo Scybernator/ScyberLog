@@ -121,6 +121,22 @@ public class JsonFormatterTests
         var logger = new ScyberLogger(string.Empty, Information, Formatter, new []{ sink }, this.StateMapper);
         var exception = new TokenException("Exceptional!");
         logger.LogError(exception, "There shouldn't be any Cancellation Token here");
-        StringAssert.DoesNotMatch(sink.LastMessage, new Regex("\"CancellationToken\":"), "CancellationToken rendered.");
+        StringAssert.DoesNotMatch(sink.LastMessage, new Regex("\"CancellationToken\":"), "CancellationToken rendered in json");
+    }
+
+    private class PropertyAccessException : Exception
+    {
+        public string BadProperty { get => throw new Exception("Exception accessing property"); }
+        public PropertyAccessException(string message) : base(message) {}
+    }
+
+    [TestMethod]
+    public void ExceptionsReportSerializationError()
+    {
+        var sink = new TestSink();
+        var logger = new ScyberLogger(string.Empty, Information, Formatter, new []{ sink }, this.StateMapper);
+        var exception = new PropertyAccessException("Exceptional!");
+        logger.LogError(exception, string.Empty);
+        StringAssert.DoesNotMatch(sink.LastMessage, new Regex("\"Exception accessing property\":"), "Exception not rendered in json");
     }
 }
