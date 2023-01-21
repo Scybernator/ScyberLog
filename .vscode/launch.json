@@ -15,7 +15,10 @@
             "cwd": "${workspaceFolder}/TestApps/ScyberLog.Worker",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "internalConsole",
-            "stopAtEntry": false
+            "stopAtEntry": false,
+            "logging": {
+                "moduleLoad": false,
+            }
         },
         {
             "name": "Launch Web API",
@@ -26,7 +29,10 @@
             "args": [],
             "cwd": "${workspaceFolder}/TestApps/ScyberLog.WebApi",
             "console": "internalConsole",
-            "stopAtEntry": false
+            "stopAtEntry": false,
+            "logging": {
+                "moduleLoad": false,
+            }
         }
     ]
 }
