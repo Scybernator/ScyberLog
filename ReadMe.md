@@ -178,7 +178,7 @@ public JsonSerializerOptions JsonSerializerOptions { get; set; } = new JsonSeria
     }.With(x => x.Converters.Add(new JsonExceptionConverter<Exception>()));
 ```
 
-For more information see [Options Patter in .Net](https://docs.microsoft.com/en-us/dotnet/core/extensions/options)
+For more information see [Options Pattern in .Net](https://docs.microsoft.com/en-us/dotnet/core/extensions/options)
 
 ## Rolling Files
 Scyberlog "supports" datetime based file rolling, mainly by interpolating the date into the filename when writing to the log.  The default file name is `"Log\\{0:yyyy-MM-dd}.log"`.  The Filename template is a standard format string, with the 0th parameter being the current datetime and the 1st parameter being the logger name.  Here is the implementation:
