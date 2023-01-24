@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using ScyberLog.Formatters;
@@ -41,6 +43,14 @@ namespace ScyberLog
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
+            //we permit one level of recursion to allow the framework to log formatting/sink errors,
+            //while preventing loops due to recursive exceptions and other shenanigans
+            this.LogInternal(logLevel, eventId, state, exception, formatter, terminal: false);
+        }
+        #endregion
+
+        private void LogInternal<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter, bool terminal)
+        {
             if (!IsEnabled(logLevel)) { return; }
 
             var (mappedState, mappedFormatter) = this.MapState(state, formatter);
@@ -59,9 +69,31 @@ namespace ScyberLog
                 }
             }
 
-            this.Sinks.ForEach(x => x.Write(message, context));
+            var sinkExceptions = new List<Exception>();
+            foreach(var sink in this.Sinks)
+            {
+                try
+                {
+                    sink.Write(message, context);
+                }
+                catch(Exception ex) when (!terminal)
+                {
+                    var errorMessage = $"Error writing log message to sink. See Inner Exception for more details";
+                    var sinkException = new LogSinkException(errorMessage, new StackTrace(fNeedFileInfo: true).ToString(), ex);
+                    this.LogInternal(LogLevel.Warning, eventId, default, sinkException, mappedFormatter, terminal: true);
+                    sinkExceptions.Add(ex);
+                }
+                catch(Exception ex)
+                {
+                    sinkExceptions.Add(ex);
+                }
+            }
+
+            if(!terminal && sinkExceptions.Any())
+            {
+                throw new AggregateException("One or more errors occurred while writing to log sinks.", sinkExceptions);
+            }
         }
-        #endregion
 
         private (object mappedState, Func<object, Exception, string> MappedFormatter) MapState<TState>(TState state, Func<TState, Exception, string> formatter)
         {
