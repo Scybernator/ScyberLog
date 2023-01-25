@@ -95,7 +95,7 @@ public WeatherForecastController(ILogger<WeatherForecastController> logger)
 
 There are some [example apps](https://github.com/Scybernator/ScyberLog/tree/master/testApps) in the solution.
 ## Unused Log Message Parameters
-```CSharp
+```CSharp 
 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now, new { ExtraData = "HelloWorld"});
 ```
 If you log a message like the above in another framework, you'll get a compiler warning about the number of parameters supplied to the logging extention methods.  This is because by default, .NET throws away parameters that aren't interpolated into the message when the message is written.  ScyberLog takes the stance that this information shouldn't be lost, and behaves differently.  If you intend to take advantage of this feature, know that if you later switch to another framework, this information will be lost. Avoid it if you want to preserve the ability to switch logging frameworks in the future without a change in behavior.
@@ -207,6 +207,9 @@ Loggers in ScyberLog are a composition of a message formatter and some number of
 ```
 
 ScyberLog has two buit in formatters, `"text"` and `"json"` and three built-in sinks,`"console"`, `"colored_console"` and `"file"`.
+
+## Custom Json Converters
+As noted above, ScyberLog relies on `System.Text.Json` to serialize to JSON, with all the caveats that implies.  In particular, not all types are serializable out of the box, and you may need to provide a [custom JsonConverter](https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/converters-how-to) to properly log these types. `System.Exception` and `System.Net.IPAddress` are two common examples, though ScyberLog includes a custom converter for `Exception` by default. ScyberLog makes a best effort to inform you when serialization errors occur.
 
 ## Performance
 ScyberLog probably isn't fast. I haven't measured it. I can't recommend you use it for anything performance critical.

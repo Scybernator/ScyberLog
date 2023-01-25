@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ScyberLog.Formatters;
 using static Microsoft.Extensions.Logging.LogLevel;
 
 namespace ScyberLog.Tests 
@@ -185,6 +188,41 @@ namespace ScyberLog.Tests
             var sinks = new []{ new TestSink( (_, context) => Assert.AreSame(exception, context.Exception)) };
             var logger = new ScyberLogger(string.Empty, Information, formatter, sinks, this.StateMapper);
             logger.Log(Information, default(EventId), string.Empty, exception, (_,_) => string.Empty);
-        }   
+        }
+
+        //Test that we get a full stack trace in formatter exception to help the caller find the bad log message
+        [TestMethod]
+        public void FormatterExceptionContainsFullStackTrace()
+        {
+            // Note here that our retry policy only works if the formatter doesn't consistently
+            // throw exceptions; This would typically be the case for the json/text formatters
+            // but custom formatters could easily misbehave.
+            var formatter = new TestFormatter((context) => {
+                if(context.Exception == null) throw new Exception("Exceptional!");
+                return context.Exception.Message;
+            });
+            var sink = new TestSink();
+            var logger = new SquelchedLogger(new ScyberLogger(string.Empty, Information, formatter, new []{ sink }, this.StateMapper), throwExceptions: false);
+
+            #line 1 "TestLog"
+            logger.Log(Information, default(EventId), string.Empty, null, (msg, ex) => msg ?? ex.Message);
+            #line default
+            var exception = sink.Contexts.Select(x => x.Exception).OfType<LogFormatterException>().First();
+            StringAssert.Contains(exception.StackTrace, "TestLog:line 1");
+        }
+
+        //Test that formatter errors get logged in the target format where possible
+        [TestMethod]
+        public void FormatterExceptionLoggedInCorrectFormat()
+        {
+            var formatter = new JsonFormatter(Options.Create(Config));
+            var sink = new TestSink();
+            var logger = new ScyberLogger(string.Empty, Information, formatter, new []{ sink }, this.StateMapper);
+
+            logger.Log(Information, default(EventId), default(Exception), "{delequientException}", new PropertyAccessException("Property Access"));
+            //verify that the resulting log message is deserializable to json
+            var deserialized = JsonSerializer.Deserialize<JsonNode>(sink.LastMessage);
+            deserialized["message"].GetValue<string>();
+        }
     }
 }

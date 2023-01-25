@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -26,6 +28,38 @@ namespace ScyberLog.Tests
                 Source = "Application"
             };
             logger.Log(logLevel: Information, eventId: default, state: logMessage, exception: null, formatter: null);
+        }
+
+        //Test that we avoid a loop condition in formatter exception handling
+        [TestMethod]
+        public void FormatterExceptionDoesNotCauseInfiniteLoop()
+        {
+            var sink = new TestSink();
+            var logger = new ScyberLogger(string.Empty, Information, Formatter, new []{ sink }, this.StateMapper);
+
+            var message = "{TimeStamp}} {Kilo}";//mismatched curly braces
+            var param1 = DateTime.Now;
+            var param2 = 1000;
+
+            int timeout = 1000;
+            var task = Task.Run(() => logger.Log(Information, default(EventId), default(Exception), message, param1, param2));;
+            if(!task.Wait(timeout))
+            {
+                // Probabaly bad things happen if this test fails because the task could still be running
+                // but at least we'll know about it. Check your process monitor for orphaned test hosts
+                Assert.Fail("Timeout exceeded");
+            }
+        }
+
+        [TestMethod]
+        public void FormatterExceptionsAreLogged()
+        {
+            var sink = new TestSink();
+            var logger = new ScyberLogger(string.Empty, Information, Formatter, new []{ sink }, this.StateMapper);
+
+            //mismatched curly braces
+            logger.Log(Information, default(EventId), default(Exception), "{TimeStamp {Kilo", DateTime.Now, 1000);
+            Assert.IsTrue(sink.Contexts.Select(x => x.Exception).OfType<LogFormatterException>().Any(), "Log does not contain formatter exception");
         }
     }
 }

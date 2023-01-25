@@ -60,14 +60,32 @@ namespace ScyberLog
             try
             {
                 message = this.Formatter.Format(context);
-            }catch(Exception ex)
-            {
-                message = "Error formatting log message; " + ex.Message;
-                if(ex is FormatException && state.IsFormattedLogValues())
-                {
-                    message += " Format string: [" + state.GetOriginalMessage() + "]";
-                }
             }
+            // If we throw an exception while formatting, we attempt here to
+            // a) convey as best we can the source of the problem; this means grabbing the stack trace so
+            //   the user can track down the bad log call
+            // b) report the error in the desired format to allow consumers of the log stream to parse
+            //   these errors in the same way the parse normal logs (i.e. don't want to send a plaintext message
+            //   to something expecting json)
+            catch(FormatException ex) when (!terminal && state.IsFormattedLogValues())
+            {
+                // we enter this block when the user inputs an invalid format string,
+                // typically due to mismatched braces (e.g "Hello {{world}!")
+                var errorMessage = $"Error formatting log message. Format string: [{state.GetOriginalMessage()}]";
+                var formattingException = new LogFormatterException(errorMessage, new StackTrace(fNeedFileInfo: true).ToString(), ex);
+                // Here we override the formatter, since the old one was bad
+                this.LogInternal<TState>(LogLevel.Warning, eventId, default, formattingException, (_, ex) => ex.Message, terminal :true);
+                return;
+            }
+            catch(Exception ex) when (!terminal)
+            {
+                // typically we enter this block due to an object in the state not being serializable.
+                var errorMessage = $"Error formatting log message.";
+                errorMessage += " This is most often the result of a missing json converter. See Inner Exception for more details.";
+                var formattingException = new LogFormatterException(errorMessage, new StackTrace(fNeedFileInfo: true).ToString(), ex);
+                this.LogInternal(LogLevel.Warning, eventId, default, formattingException, mappedFormatter, terminal: true);
+                return;
+            }//if terminal = true, and an exception gets thrown by the formatter, it will bubble up if not squelched
 
             var sinkExceptions = new List<Exception>();
             foreach(var sink in this.Sinks)
