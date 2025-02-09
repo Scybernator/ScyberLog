@@ -135,6 +135,8 @@ namespace ScyberLog.Tests
         }
 
         [TestMethod]
+        [Ignore("Obsoleted by change in dotnet framework")]
+        //https://github.com/dotnet/runtime/commit/8798c0459a36463bf3355f1059ad97fdd890c99e#diff-85963522e594a4a2ced0779745f1c5f219f0c017ed0743a7b98916dee71713f3R47
         public void InvalidFormatStringHandling()
         {
             var sink = new TestSink();

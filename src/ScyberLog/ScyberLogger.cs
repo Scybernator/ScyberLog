@@ -69,6 +69,11 @@ namespace ScyberLog
             //   to something expecting json)
             catch(FormatException ex) when (!terminal && state.IsFormattedLogValues())
             {
+                // The below considerations were obsoleted by the below change to the LogValuesFormatter class
+                // as of dotnet 8, which throws the parsing exception earlier in the call stack, before we get
+                // get a chance to catch it.  Leaving it here in case they ever see the error of their ways.
+                // https://github.com/dotnet/runtime/commit/8798c0459a36463bf3355f1059ad97fdd890c99e#diff-85963522e594a4a2ced0779745f1c5f219f0c017ed0743a7b98916dee71713f3R47
+
                 // we enter this block when the user inputs an invalid format string,
                 // typically due to mismatched braces (e.g "Hello {{world}!")
                 var errorMessage = $"Error formatting log message. Format string: [{state.GetOriginalMessage()}]";
