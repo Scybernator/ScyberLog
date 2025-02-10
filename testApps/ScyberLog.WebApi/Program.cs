@@ -6,11 +6,8 @@ using System.Diagnostics.CodeAnalysis;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.ConfigureLogging((HostBuilderContext hostingContext, ILoggingBuilder loggingBuilder) => 
-    {
-        loggingBuilder.ClearProviders();
-        loggingBuilder.AddScyberLog(hostingContext.Configuration.GetSection("ScyberLog"));
-    });
+builder.Logging.ClearProviders()
+    .AddScyberLog(builder.Configuration.GetSection("ScyberLog"));
 
 // Add services to the container.
 builder.Services.AddHostedService<Worker>();

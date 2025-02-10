@@ -11,30 +11,25 @@ using ScyberLog.Formatters;
 
 [assembly: SuppressMessage("Usage", "CA2017:Number of parameters supplied in the logging message template do not match the number of named placeholders", Justification = "ScyberLog captures unused parameters")]
 
-IHost host = Host.CreateDefaultBuilder(args)
-    .ConfigureServices(services =>
+var builder = Host.CreateApplicationBuilder(args);
+builder.Services.AddHostedService<Worker>();
+builder.Services.AddTransient<ILogSink, ExampleConsoleSink>();
+builder.Services.AddTransient<ILogFormatter, SarcasticTextFormatter>();
+builder.Services.Configure<ScyberLogConfiguration>(config =>
+{
+    config.EnableConsole = false;
+    config.FileFormatter = "json";
+    config.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    config.AdditionalLoggers.Add(new LoggerSetup()
     {
-        services.AddHostedService<Worker>();
-        services.AddTransient<ILogSink, ExampleConsoleSink>();
-        services.AddTransient<ILogFormatter, SarcasticTextFormatter>();
-        services.Configure<ScyberLogConfiguration>(config =>
-        {
-            config.EnableConsole = false;
-            config.FileFormatter = "json";
-            config.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-            config.AdditionalLoggers.Add(new LoggerSetup()
-            {
-                Formatter = "sarcastic",
-                Sinks = new [] { "example_console" }
-            });
-        });
-    })
-    .ConfigureLogging((HostBuilderContext hostingContext, ILoggingBuilder loggingBuilder) => 
-    {
-        loggingBuilder.ClearProviders();
-        loggingBuilder.AddScyberLog();
-    })
-    .Build();
+        Formatter = "sarcastic",
+        Sinks = ["example_console"]
+    });
+});
+builder.Logging.ClearProviders();
+builder.Logging.AddScyberLog();
+
+var host = builder.Build();
 
 await host.RunAsync();
 

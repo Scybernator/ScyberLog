@@ -74,14 +74,11 @@ IHost host = Host.CreateDefaultBuilder(args)
     .Build();
 ```
 
-ASP.NET 6.0:
+ASP.NET 9.0:
 ```CSharp
 var builder = WebApplication.CreateBuilder(args);
-builder.Host.ConfigureLogging((HostBuilderContext hostingContext, ILoggingBuilder loggingBuilder) => 
-    {
-        loggingBuilder.ClearProviders();
-        loggingBuilder.AddScyberLog();
-    });
+builder.Logging.ClearProviders();
+builder.Logging.AddScyberLog(builder.Configuration);
 ```
 
 Then inject the logger wherever you need it:
@@ -122,49 +119,43 @@ Using `appsettings.json`
     "EnableConsole": true,
     "EnableFile": true,
     "FileNameTemplate": "Log\\{0:yyyy-MM-dd}.log",
-    "FileFormatter": "Json"
+    "FileFormatter": "json"
   }
 }
 ```
 ```CSharp
-builder.Host.ConfigureLogging((HostBuilderContext hostingContext, ILoggingBuilder loggingBuilder) => 
-    {
-        loggingBuilder.ClearProviders();
-        loggingBuilder.AddScyberLog(hostingContext.Configuration);
-    });
+var host = Host.CreateApplicationBuilder(args);
+host.Logging.ClearProviders();
+host.Logging.AddScyberLog(host.Configuration);
 ```
 
 Using configuration action parameter:
 ```CSharp
-builder.Host.ConfigureLogging((HostBuilderContext hostingContext, ILoggingBuilder loggingBuilder) => 
+var host = Host.CreateApplicationBuilder(args);
+host.Logging.ClearProviders();
+host.Logging.AddScyberLog(config =>
     {
-        loggingBuilder.ClearProviders();
-        loggingBuilder.AddScyberLog(config =>
-        {
-            config.FileFormatter = "console";
-            config.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-        });
+        config.FileFormatter = "console";
+        config.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
     });
 ```
 
-Using `services.Configure`:
+Using `Services.Configure`:
 ```CSharp
-IHost host = Host.CreateDefaultBuilder(args)
-    .ConfigureServices(services =>
+var builder = Host.CreateApplicationBuilder(args);
+builder.Services.Configure<ScyberLogConfiguration>(config =>
+{
+    config.EnableConsole = false;
+    config.FileFormatter = "json";
+    config.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    config.AdditionalLoggers.Add(new LoggerSetup()
     {
-        services.AddHostedService<Worker>();
-        services.Configure<ScyberLogConfiguration>(config =>
-        {
-            config.FileFormatter = "console";
-            config.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-        });
-    })
-    .ConfigureLogging((HostBuilderContext hostingContext, ILoggingBuilder loggingBuilder) => 
-    {
-        loggingBuilder.ClearProviders();
-        loggingBuilder.AddScyberLog();
-    })
-    .Build();
+        Formatter = "sarcastic",
+        Sinks = ["example_console"]
+    });
+});
+builder.Logging.ClearProviders();
+builder.Logging.AddScyberLog();
 ```
 
 **NOTE** Ironically, not all properties of the `JsonSerializerOptions` are serializable from JSON, so if you aren't happy with the defaults you'll need to configure them in code.  The default configuration is below; note that as of this writing the built in serializer fails to serialize `System.Exception` and hence the library has a custom converter.
@@ -187,7 +178,7 @@ var path = string.Format(this.FileTemplate, DateTime.Now, state.Logger);
 ```
 
 ## Custom formatters and sinks
-Loggers in ScyberLog are a composition of a message formatter and some number of mesage sinks.  If you need to modify the format of any log messages or write to another datasource you can implement a new [ILogFormatter](https://github.com/Scybernator/ScyberLog/blob/master/src/ScyberLog/Formatters/ILogFormatter.cs) or [ILogSink](https://github.com/Scybernator/ScyberLog/blob/master/src/ScyberLog/Sinks/ILogSink.cs) respectively and register them with the service collection.  Both of these interfaces implement the [IKeyedItem](https://github.com/Scybernator/ScyberLog/blob/246c6335e99b3d31ea7ff9a0e74d2219494c08d9/src/ScyberLog/Utils/KeyedItemCollection.cs) interface, which you can use to specify a string key with which you can reference your sinks/formatters in the configuration:
+Loggers in ScyberLog are a composition of a message formatter and some number of mesage sinks.  If you need to modify the format of any log messages or write to another location you can implement a new [ILogFormatter](https://github.com/Scybernator/ScyberLog/blob/master/src/ScyberLog/Formatters/ILogFormatter.cs) or [ILogSink](https://github.com/Scybernator/ScyberLog/blob/master/src/ScyberLog/Sinks/ILogSink.cs) respectively and register them with the service collection.  Both of these interfaces implement the [IKeyedItem](https://github.com/Scybernator/ScyberLog/blob/246c6335e99b3d31ea7ff9a0e74d2219494c08d9/src/ScyberLog/Utils/KeyedItemCollection.cs) interface, which you can use to specify a string key with which you can reference your sinks/formatters in the configuration:
 
 ```CSharp
     services.AddTransient<ILogSink, MySink>();
@@ -200,7 +191,7 @@ Loggers in ScyberLog are a composition of a message formatter and some number of
             new LoggerSetup()
             {
                 Formatter = "my_formatter",
-                Sinks = new { "my_sink", "file" }
+                Sinks = [ "my_sink", "file" ]
             }
         );
     });
