@@ -8,7 +8,7 @@
 
     <!-- Nuget Package Properties -->
     <PackageId>ScyberLog</PackageId>
-    <Version>1.2.0</Version>
+    <Version>2.0.0</Version>
     <Description>Simple console and file logger for .NET</Description>
     <PackageTags>scyberlog;log;logger;logging;logfiles;</PackageTags>
     <Authors>Scybernator</Authors>
@@ -19,7 +19,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Scybernator/ScyberLog</RepositoryUrl>
-    <Copyright>Copyright © 2022 ScyberLog Contributors</Copyright>
+    <Copyright>Copyright © 2025 ScyberLog Contributors</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
