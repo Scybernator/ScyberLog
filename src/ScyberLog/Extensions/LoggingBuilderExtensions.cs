@@ -4,8 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Configuration;
-using ScyberLog.Sinks;
 using ScyberLog.Formatters;
+using ScyberLog.Sinks;
 
 namespace ScyberLog
 {
@@ -23,11 +23,11 @@ namespace ScyberLog
             LoggerProviderOptions.RegisterProviderOptions<ScyberLogConfiguration, ScyberLoggerProvider>(builder.Services);
             return builder;
         }
-    
+
         public static ILoggingBuilder AddScyberLog(this ILoggingBuilder builder, Action<ScyberLogConfiguration> configure = null)
         {
             builder.AddScyberLog();
-            if(configure != null)
+            if (configure != null)
             {
                 builder.Services.PostConfigure(configure);
             }

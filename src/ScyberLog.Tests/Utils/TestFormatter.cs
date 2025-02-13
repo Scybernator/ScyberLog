@@ -8,7 +8,7 @@ namespace ScyberLog.Tests
         public string Key => string.Empty;
         public TestFormatter(Func<LogContext, string> formatter = null)
         {
-            this.Formatter = formatter ?? (Func<LogContext, string>) ((context) => context.ToString());
+            this.Formatter = formatter ?? ((context) => context.ToString());
         }
 
         private Func<LogContext, string> Formatter { get; }

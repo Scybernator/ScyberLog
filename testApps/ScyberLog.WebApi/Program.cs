@@ -1,6 +1,6 @@
+using System.Diagnostics.CodeAnalysis;
 using ScyberLog;
 using ScyberLog.WebApi;
-using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Usage", "CA2017:Number of parameters supplied in the logging message template do not match the number of named placeholders", Justification = "ScyberLog Captures unused parameters")]
 

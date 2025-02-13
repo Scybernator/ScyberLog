@@ -10,7 +10,7 @@ using ScyberLog.Sinks;
 
 [assembly: InternalsVisibleTo("ScyberLog.Tests")]
 
-namespace ScyberLog 
+namespace ScyberLog
 {
     internal class ScyberLogger : ILogger
     {
@@ -67,7 +67,7 @@ namespace ScyberLog
             // b) report the error in the desired format to allow consumers of the log stream to parse
             //   these errors in the same way the parse normal logs (i.e. don't want to send a plaintext message
             //   to something expecting json)
-            catch(FormatException ex) when (!terminal && state.IsFormattedLogValues())
+            catch (FormatException ex) when (!terminal && state.IsFormattedLogValues())
             {
                 // The below considerations were obsoleted by the below change to the LogValuesFormatter class
                 // as of dotnet 8, which throws the parsing exception earlier in the call stack, before we get
@@ -79,10 +79,10 @@ namespace ScyberLog
                 var errorMessage = $"Error formatting log message. Format string: [{state.GetOriginalMessage()}]";
                 var formattingException = new LogFormatterException(errorMessage, new StackTrace(fNeedFileInfo: true).ToString(), ex);
                 // Here we override the formatter, since the old one was bad
-                this.LogInternal<TState>(LogLevel.Warning, eventId, default, formattingException, (_, ex) => ex.Message, terminal :true);
+                this.LogInternal<TState>(LogLevel.Warning, eventId, default, formattingException, (_, ex) => ex.Message, terminal: true);
                 return;
             }
-            catch(Exception ex) when (!terminal)
+            catch (Exception ex) when (!terminal)
             {
                 // typically we enter this block due to an object in the state not being serializable.
                 var errorMessage = $"Error formatting log message.";
@@ -93,26 +93,26 @@ namespace ScyberLog
             }//if terminal = true, and an exception gets thrown by the formatter, it will bubble up if not squelched
 
             var sinkExceptions = new List<Exception>();
-            foreach(var sink in this.Sinks)
+            foreach (var sink in this.Sinks)
             {
                 try
                 {
                     sink.Write(message, context);
                 }
-                catch(Exception ex) when (!terminal)
+                catch (Exception ex) when (!terminal)
                 {
                     var errorMessage = $"Error writing log message to sink. See Inner Exception for more details";
                     var sinkException = new LogSinkException(errorMessage, new StackTrace(fNeedFileInfo: true).ToString(), ex);
                     this.LogInternal(LogLevel.Warning, eventId, default, sinkException, mappedFormatter, terminal: true);
                     sinkExceptions.Add(ex);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     sinkExceptions.Add(ex);
                 }
             }
 
-            if(!terminal && sinkExceptions.Any())
+            if (!terminal && sinkExceptions.Any())
             {
                 throw new AggregateException("One or more errors occurred while writing to log sinks.", sinkExceptions);
             }

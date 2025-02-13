@@ -19,16 +19,17 @@ namespace ScyberLog
         }
 
         public bool Map<TState>(TState state, Func<TState, Exception, string> formatter, out object outObject, out Func<object, Exception, string> outFormatter)
-        {           
-             //internal type Microsoft.Extensions.Logging.FormattedLogValues, used by built in extension methods
+        {
+            //internal type Microsoft.Extensions.Logging.FormattedLogValues, used by built in extension methods
             if (state is IReadOnlyList<KeyValuePair<string, object>> formattedLogValues)
             {
                 var wrapper = new FormattedLogValuesWrapper(formattedLogValues, this.IncludeOriginalFormat);
                 //If this is a text-only message, we want to state to be null
-                if(wrapper.Values == null && wrapper.Data == null)
+                if (wrapper.Values == null && wrapper.Data == null)
                 {
                     outObject = null;
-                }else
+                }
+                else
                 {
                     outObject = wrapper;
                 }
@@ -38,7 +39,7 @@ namespace ScyberLog
 
             outObject = null;
             outFormatter = null;
-            return false; 
+            return false;
         }
     }
 }

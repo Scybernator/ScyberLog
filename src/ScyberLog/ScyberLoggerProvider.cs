@@ -28,27 +28,29 @@ namespace ScyberLog
             var loggers = new List<ILogger>();
             if (this.Config.EnableConsole)
             {
-                var consoleLogger = this.BuildLogger(categoryName, 
-                    new LoggerSetup() { 
+                var consoleLogger = this.BuildLogger(categoryName,
+                    new LoggerSetup()
+                    {
                         Formatter = this.Config.ConsoleFormatter ?? "text",
-                        Sinks = new [] { "colored_console" }
+                        Sinks = ["colored_console"]
                     });
                 loggers.Add(consoleLogger);
             }
 
             if (this.Config.EnableFile)
             {
-                    var consoleLogger = this.BuildLogger(categoryName, 
-                    new LoggerSetup() { 
-                        Formatter = this.Config.FileFormatter  ?? "json",
-                        Sinks = new [] { "file" }
-                    });
+                var consoleLogger = this.BuildLogger(categoryName,
+                new LoggerSetup()
+                {
+                    Formatter = this.Config.FileFormatter ?? "json",
+                    Sinks = ["file"]
+                });
                 loggers.Add(consoleLogger);
             }
 
-            if(this.Config.AdditionalLoggers != null)
+            if (this.Config.AdditionalLoggers != null)
             {
-                foreach(var setup in this.Config.AdditionalLoggers)
+                foreach (var setup in this.Config.AdditionalLoggers)
                 {
                     loggers.Add(this.BuildLogger(categoryName, setup));
                 }
@@ -59,15 +61,15 @@ namespace ScyberLog
 
         private ILogger BuildLogger(string categoryName, LoggerSetup setup)
         {
-            if(!this.Formatters.TryGetValue(setup.Formatter, out ILogFormatter formatter))
+            if (!this.Formatters.TryGetValue(setup.Formatter, out ILogFormatter formatter))
             {
                 throw new KeyNotFoundException($"Formatter [{setup.Formatter}] not registered.");
             }
 
             var sinks = new List<ILogSink>();
-            foreach(var sinkKey in setup.Sinks)
+            foreach (var sinkKey in setup.Sinks)
             {
-                if(!this.Sinks.TryGetValue(sinkKey, out ILogSink sink))
+                if (!this.Sinks.TryGetValue(sinkKey, out ILogSink sink))
                 {
                     throw new KeyNotFoundException($"Sink [{sink}] not registered.");
                 }
@@ -75,11 +77,11 @@ namespace ScyberLog
             }
 
             return new ScyberLogger(
-                    categoryName, 
+                    categoryName,
                     this.Config.MinLevel,
-                    formatter, 
-                    sinks, 
-                    this.StateMapper); 
+                    formatter,
+                    sinks,
+                    this.StateMapper);
         }
 
         public void Dispose() { }

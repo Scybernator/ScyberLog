@@ -1,13 +1,12 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using ScyberLog.Worker;
-using ScyberLog;
 using Microsoft.Extensions.Logging;
-using System.Text.Json;
-
-using System.Diagnostics.CodeAnalysis;
-using ScyberLog.Sinks;
+using ScyberLog;
 using ScyberLog.Formatters;
+using ScyberLog.Sinks;
+using ScyberLog.Worker;
 
 [assembly: SuppressMessage("Usage", "CA2017:Number of parameters supplied in the logging message template do not match the number of named placeholders", Justification = "ScyberLog captures unused parameters")]
 

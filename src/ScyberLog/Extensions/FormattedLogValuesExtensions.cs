@@ -7,13 +7,13 @@ namespace ScyberLog
     {
         public static string GetOriginalMessage(this object formattedLogValues)
         {
-            if(!IsFormattedLogValues(formattedLogValues)) { return string.Empty; }
+            if (!IsFormattedLogValues(formattedLogValues)) { return string.Empty; }
             return formattedLogValues.GetPrivateField<string>("_originalMessage") ?? string.Empty;
         }
 
         public static object[] GetValues(this object formattedLogValues)
         {
-            if(!IsFormattedLogValues(formattedLogValues)) { return Array.Empty<object>(); }
+            if (!IsFormattedLogValues(formattedLogValues)) { return Array.Empty<object>(); }
             return formattedLogValues.GetPrivateField<object[]>("_values") ?? Array.Empty<object>();
         }
 

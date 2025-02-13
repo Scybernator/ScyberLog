@@ -23,7 +23,7 @@ namespace ScyberLog.Tests
         {
             var formatter = new TestFormatter();
             var sink = new TestSink();
-            var logger = new ScyberLogger(string.Empty, Information, formatter, new []{ sink }, this.StateMapper);
+            var logger = new ScyberLogger(string.Empty, Information, formatter, [sink], this.StateMapper);
 
             var message = "{TimeStamp} {Kilo}";
             var param1 = DateTime.Now;
@@ -40,7 +40,7 @@ namespace ScyberLog.Tests
         {
             var formatter = new TestFormatter();
             var sink = new TestSink();
-            var logger = new ScyberLogger(string.Empty, Information, formatter, new []{ sink }, this.StateMapper);
+            var logger = new ScyberLogger(string.Empty, Information, formatter, [sink], this.StateMapper);
 
             var message = "{TimeStamp}";
             var param1 = DateTime.Now;
@@ -61,8 +61,8 @@ namespace ScyberLog.Tests
             var param1 = DateTime.Now;
             var param2 = "Hello World!";
             var param3 = new { ExtraData = 1000 };
-            var logger = new ScyberLogger(string.Empty, Information, formatter, new []{ sink }, this.StateMapper);
-            using(var scope1 = logger.BeginScope("{TimeStamp} {Message}", param1, param2, param3))
+            var logger = new ScyberLogger(string.Empty, Information, formatter, [sink], this.StateMapper);
+            using (var scope1 = logger.BeginScope("{TimeStamp} {Message}", param1, param2, param3))
             {
                 logger.Log(Information, default(EventId), default(Exception), string.Empty);
                 var scope = sink.Scopes.First() as FormattedLogValuesWrapper;
@@ -80,8 +80,8 @@ namespace ScyberLog.Tests
             var param1 = DateTime.Now;
             var param2 = "Hello World!";
             var param3 = new { ExtraData = 1000 };
-            var logger = new ScyberLogger(string.Empty, Information, formatter, new []{ sink }, this.StateMapper);
-            using(var scope1 = logger.BeginScope("{TimeStamp}", param1, param2, param3))
+            var logger = new ScyberLogger(string.Empty, Information, formatter, [sink], this.StateMapper);
+            using (var scope1 = logger.BeginScope("{TimeStamp}", param1, param2, param3))
             {
                 logger.Log(Information, default(EventId), default(Exception), string.Empty);
                 var scope = sink.Scopes.First() as FormattedLogValuesWrapper;

@@ -21,12 +21,13 @@ namespace ScyberLog.Tests
         public void ExceptionSerializesWithoutError()
         {
             var sink = new TestSink();
-            var logger = new ScyberLogger(string.Empty, Information, Formatter, new []{ sink }, this.StateMapper);
+            var logger = new ScyberLogger(string.Empty, Information, Formatter, [sink], this.StateMapper);
 
             try
             {
                 throw new Exception("Exceptional!");
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 logger.LogError(ex, "An exception has occurred");
             }
@@ -36,13 +37,14 @@ namespace ScyberLog.Tests
         public void InnerExceptionsOnlyAppearOnceInAggregateExceptions()
         {
             var sink = new TestSink();
-            var logger = new ScyberLogger(string.Empty, Information, Formatter, new []{ sink }, this.StateMapper);
-            var exception1 = new Exception("Exception 1"); 
-            var exception2 = new Exception("Exception 2"); 
+            var logger = new ScyberLogger(string.Empty, Information, Formatter, [sink], this.StateMapper);
+            var exception1 = new Exception("Exception 1");
+            var exception2 = new Exception("Exception 2");
             try
             {
-                throw new AggregateException("Exceptional!", new [] { exception1, exception2});
-            }catch(Exception ex)
+                throw new AggregateException("Exceptional!", [exception1, exception2]);
+            }
+            catch (Exception ex)
             {
                 logger.LogError(ex, "An exception has occurred");
             }
@@ -56,7 +58,7 @@ namespace ScyberLog.Tests
         public void UsedParametersAppearInState()
         {
             var sink = new TestSink();
-            var logger = new ScyberLogger(string.Empty, Information, Formatter, new []{ sink }, this.StateMapper);
+            var logger = new ScyberLogger(string.Empty, Information, Formatter, [sink], this.StateMapper);
 
             var message = "{Greeting} {Kilo}";
             var param1 = "HELLO";
@@ -72,7 +74,7 @@ namespace ScyberLog.Tests
         public void UnusedParametersAppearInData()
         {
             var sink = new TestSink();
-            var logger = new ScyberLogger(string.Empty, Information, Formatter, new []{ sink }, this.StateMapper);
+            var logger = new ScyberLogger(string.Empty, Information, Formatter, [sink], this.StateMapper);
 
             var message = "{TimeStamp}";
             var param1 = DateTime.Now;
@@ -88,8 +90,9 @@ namespace ScyberLog.Tests
         public void NullChecks()
         {
             var sink = new TestSink();
-            var logger = new ScyberLogger(string.Empty, Trace, Formatter, new []{ sink }, this.StateMapper);
-            var logMessage = new{
+            var logger = new ScyberLogger(string.Empty, Trace, Formatter, [sink], this.StateMapper);
+            var logMessage = new
+            {
                 TimeStamp = DateTime.Now,
                 Message = "Hello World",
                 Log = "TestLogger",
@@ -102,7 +105,7 @@ namespace ScyberLog.Tests
         public void TextLogContainsNoState()
         {
             var sink = new TestSink();
-            var logger = new ScyberLogger(string.Empty, Information, Formatter, new []{ sink }, this.StateMapper);
+            var logger = new ScyberLogger(string.Empty, Information, Formatter, [sink], this.StateMapper);
 
             logger.LogInformation("There shouldn't be any state in the json");
             StringAssert.DoesNotMatch(sink.LastMessage, new Regex("\"state\":"), "State was present in text only message");
@@ -111,14 +114,14 @@ namespace ScyberLog.Tests
         private class TokenException : Exception
         {
             public CancellationToken Token { get; set; }
-            public TokenException(string message) : base(message) {}
+            public TokenException(string message) : base(message) { }
         }
 
         [TestMethod]
         public void ExceptionsDoNotSerializeCancellationTokens()
         {
             var sink = new TestSink();
-            var logger = new ScyberLogger(string.Empty, Information, Formatter, new []{ sink }, this.StateMapper);
+            var logger = new ScyberLogger(string.Empty, Information, Formatter, [sink], this.StateMapper);
             var exception = new TokenException("Exceptional!");
             logger.LogError(exception, "There shouldn't be any Cancellation Token here");
             StringAssert.DoesNotMatch(sink.LastMessage, new Regex("\"CancellationToken\":"), "CancellationToken rendered in json");
@@ -128,7 +131,7 @@ namespace ScyberLog.Tests
         public void ExceptionsReportSerializationError()
         {
             var sink = new TestSink();
-            var logger = new ScyberLogger(string.Empty, Information, Formatter, new []{ sink }, this.StateMapper);
+            var logger = new ScyberLogger(string.Empty, Information, Formatter, [sink], this.StateMapper);
             var exception = new PropertyAccessException("Exceptional!");
             logger.LogError(exception, string.Empty);
             StringAssert.Matches(sink.LastMessage, new Regex(":\"Exception accessing property\""), "Exception not rendered in json");
@@ -140,7 +143,7 @@ namespace ScyberLog.Tests
         public void InvalidFormatStringHandling()
         {
             var sink = new TestSink();
-            var logger = new ScyberLogger(string.Empty, Information, Formatter, new []{ sink }, this.StateMapper);
+            var logger = new ScyberLogger(string.Empty, Information, Formatter, [sink], this.StateMapper);
 
             var message = "{TimeStamp} {{Kilo}";
             var param1 = DateTime.Now;

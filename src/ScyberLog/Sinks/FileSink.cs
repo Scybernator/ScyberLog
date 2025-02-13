@@ -26,9 +26,9 @@ namespace ScyberLog.Sinks
             path = Environment.ExpandEnvironmentVariables(path);//expand variables like %PROGRAMDATA%
             var fileInfo = new FileInfo(path);
             fileInfo.Directory.Create();
-            lock(Locks.GetOrAdd(path, new object()))
+            lock (Locks.GetOrAdd(path, new object()))
             {
-                File.AppendAllLines(path, new[] { message });
+                File.AppendAllLines(path, [message]);
             }
         }
     }

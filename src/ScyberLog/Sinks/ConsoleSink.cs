@@ -8,7 +8,7 @@ namespace ScyberLog.Sinks
         private static object Lock { get; } = new Object();
         public void Write<TState>(string message, LogContext<TState> state)
         {
-            lock(Lock)
+            lock (Lock)
             {
                 Console.WriteLine(message);
             }

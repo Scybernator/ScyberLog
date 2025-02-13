@@ -20,8 +20,9 @@ namespace ScyberLog.Tests
         public void NullChecks()
         {
             var sink = new TestSink();
-            var logger = new ScyberLogger(string.Empty, Trace, Formatter, new []{ sink }, this.StateMapper);
-            var logMessage = new{
+            var logger = new ScyberLogger(string.Empty, Trace, Formatter, [sink], this.StateMapper);
+            var logMessage = new
+            {
                 TimeStamp = DateTime.Now,
                 Message = "Hello World",
                 Log = "TestLogger",
@@ -35,15 +36,15 @@ namespace ScyberLog.Tests
         public void FormatterExceptionDoesNotCauseInfiniteLoop()
         {
             var sink = new TestSink();
-            var logger = new ScyberLogger(string.Empty, Information, Formatter, new []{ sink }, this.StateMapper);
+            var logger = new ScyberLogger(string.Empty, Information, Formatter, [sink], this.StateMapper);
 
             var message = "{TimeStamp}} {Kilo}";//mismatched curly braces
             var param1 = DateTime.Now;
             var param2 = 1000;
 
             int timeout = 1000;
-            var task = Task.Run(() => logger.Log(Information, default(EventId), default(Exception), message, param1, param2));;
-            if(!task.Wait(timeout))
+            var task = Task.Run(() => logger.Log(Information, default(EventId), default(Exception), message, param1, param2)); ;
+            if (!task.Wait(timeout))
             {
                 // Probabaly bad things happen if this test fails because the task could still be running
                 // but at least we'll know about it. Check your process monitor for orphaned test hosts
@@ -57,7 +58,7 @@ namespace ScyberLog.Tests
         public void FormatterExceptionsAreLogged()
         {
             var sink = new TestSink();
-            var logger = new ScyberLogger(string.Empty, Information, Formatter, new []{ sink }, this.StateMapper);
+            var logger = new ScyberLogger(string.Empty, Information, Formatter, [sink], this.StateMapper);
 
             //mismatched curly braces
             logger.Log(Information, default(EventId), default(Exception), "{TimeStamp {Kilo", DateTime.Now, 1000);

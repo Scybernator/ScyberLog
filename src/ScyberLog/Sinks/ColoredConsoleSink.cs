@@ -10,8 +10,9 @@ namespace ScyberLog.Sinks
 
         public void Write<TState>(string message, LogContext<TState> state)
         {
-            using(new ColoredConsole()) {
-                if(ConsoleColors.ContainsKey(state.LogLevel))
+            using (new ColoredConsole())
+            {
+                if (ConsoleColors.ContainsKey(state.LogLevel))
                 {
                     var colors = ConsoleColors[state.LogLevel];
                     Console.ForegroundColor = colors.Foreground;
@@ -21,7 +22,7 @@ namespace ScyberLog.Sinks
             }
         }
 
-        private readonly Dictionary<LogLevel, (ConsoleColor Foreground, ConsoleColor Background)> ConsoleColors = new ()
+        private readonly Dictionary<LogLevel, (ConsoleColor Foreground, ConsoleColor Background)> ConsoleColors = new()
         {
             {LogLevel.Critical, (ConsoleColor.White, ConsoleColor.Red)},
             {LogLevel.Error, (ConsoleColor.DarkRed, ConsoleColor.Black)},

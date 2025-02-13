@@ -18,7 +18,7 @@ namespace ScyberLog.Tests
 
         public TestSink(Action<string, LogContext> sinkAction = null)
         {
-            this.SinkAction = sinkAction ?? ((_, _) => {});
+            this.SinkAction = sinkAction ?? ((_, _) => { });
         }
 
         public void Write<TState>(string message, LogContext<TState> context)

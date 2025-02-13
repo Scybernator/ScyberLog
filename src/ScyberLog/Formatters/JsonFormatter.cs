@@ -25,14 +25,15 @@ namespace ScyberLog.Formatters
             public string Level { get; init; }
             public string Message { get; init; }
             public EventId? EventId { get; init; }
-            public object State { get; init;}
+            public object State { get; init; }
             public Exception Exception { get; init; }
             public IEnumerable<Object> Scopes { get; init; }
         }
 
         public string Format<TState>(LogContext<TState> context)
         {
-            var logObject = new JsonLogContext {
+            var logObject = new JsonLogContext
+            {
                 TimeStamp = context.TimeStamp,
                 Logger = context.Logger,
                 Level = context.LogLevel.ToShortString(),
@@ -41,7 +42,6 @@ namespace ScyberLog.Formatters
                 State = context.State,
                 Exception = context.Exception,
                 Scopes = context.Scopes.Any() ? context.Scopes : null,
-                
             };
 
             return JsonSerializer.Serialize(logObject, this.SerializationOptions);
