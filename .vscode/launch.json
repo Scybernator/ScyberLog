@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/TestApps/ScyberLog.Worker/bin/Debug/net7.0/ScyberLog.Worker.dll",
+            "program": "${workspaceFolder}/TestApps/ScyberLog.Worker/bin/Debug/net9.0/ScyberLog.Worker.dll",
             "args": [],
             "cwd": "${workspaceFolder}/TestApps/ScyberLog.Worker",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
@@ -25,7 +25,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/TestApps/ScyberLog.WebApi/bin/Debug/net7.0/ScyberLog.WebApi.dll",
+            "program": "${workspaceFolder}/TestApps/ScyberLog.WebApi/bin/Debug/net9.0/ScyberLog.WebApi.dll",
             "args": [],
             "cwd": "${workspaceFolder}/TestApps/ScyberLog.WebApi",
             "console": "internalConsole",
